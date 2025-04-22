@@ -42,8 +42,8 @@
         }
     })
 
-    const nodes = writable(initialNodes)
-    const edges = writable(initialEdges)
+    let nodes = $state.raw(initialNodes)
+    let edges = $state.raw(initialEdges)
 
     const nodeTypes = {
         turbo: TurboNode
@@ -60,7 +60,8 @@
 </script>
 
 <div style:height="100vh">
-    <SvelteFlow {nodes} {nodeTypes} {edges} {edgeTypes} {defaultEdgeOptions} fitView connectionMode={ConnectionMode.Loose}>
+    <SvelteFlow bind:nodes {nodeTypes} bind:edges {edgeTypes} {defaultEdgeOptions} fitView
+                connectionMode={ConnectionMode.Loose}>
         <Controls showLock={false} />
         <svg>
             <defs>

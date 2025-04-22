@@ -2,8 +2,7 @@
     import {Handle, type NodeProps, Position} from "@xyflow/svelte";
     import {CalendarIcon, CloudIcon} from "svelte-feather-icons";
 
-    type $$Props = NodeProps
-    export let data: $$Props['data']
+    let {data}: NodeProps = $props();
 </script>
 
 <div class="cloud gradient">

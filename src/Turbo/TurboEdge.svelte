@@ -1,37 +1,30 @@
 <script lang="ts">
     import {type EdgeProps, getBezierPath, useInternalNode} from "@xyflow/svelte";
     import {getEdgeParams} from "../utils";
+    import {BaseEdge} from "@xyflow/svelte";
 
-    type $$Props = EdgeProps
+    let {source, target, id}: EdgeProps = $props()
 
-    export let markerEnd: $$Props['markerEnd']
-    export let source: $$Props['source']
-    export let target: $$Props['target']
-    export let id: $$Props['id']
+    let sourceNode = useInternalNode(source)
+    let targetNode = useInternalNode(target)
 
-    $: sourceNode = useInternalNode(source)
-    $: targetNode = useInternalNode(target)
-
-    let edgePath: string | undefined
-
-    $: {
-        if ($sourceNode && $targetNode) {
-            const edgeParams = getEdgeParams($sourceNode, $targetNode);
+    let path: string | undefined = $derived.by(() => {
+        if (sourceNode.current && targetNode.current) {
+            const edgeParams = getEdgeParams(sourceNode.current, targetNode.current);
             const xEqual = edgeParams.sx === edgeParams.tx;
             const yEqual = edgeParams.sy === edgeParams.ty;
 
-            [edgePath] = getBezierPath({
+            return getBezierPath({
                 sourceX: xEqual ? edgeParams.sx + 0.0001 : edgeParams.sx,
                 sourceY: yEqual ? edgeParams.sy + 0.0001 : edgeParams.sy,
                 sourcePosition: edgeParams.sourcePos,
                 targetPosition: edgeParams.targetPos,
                 targetX: edgeParams.tx,
                 targetY: edgeParams.ty
-            });
-        } else {
-            edgePath = undefined;
+            })[0]
         }
-    }
+        return undefined
+    })
 </script>
 
-<path {id} class="svelte-flow__edge-path" d={edgePath} marker-end={markerEnd} />
+<BaseEdge {id} {path} />
