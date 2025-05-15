@@ -7,7 +7,14 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json"
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run lint"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
@@ -20,8 +27,10 @@
     "svelte-check": "^4.1.5",
     "tailwindcss": "^4.1.4",
     "tslib": "^2.6.0",
-    "typescript": "^5.0.2",
-    "vite": "^6.2.5"
+    "typescript": "^5.6.3",
+    "vite": "^6.2.5",
+    "gts": "^6.0.2",
+    "@types/node": "^22.7.5"
   },
   "dependencies": {
     "flowbite-svelte-icons": "^2.1.1"
