@@ -5,16 +5,16 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary-50: #E92A67;
-  --color-primary-100: #D43577;
-  --color-primary-200: #BF3F87;
-  --color-primary-300: #A94A97;
-  --color-primary-400: #9455A7;
-  --color-primary-500: #7F5FB6;
-  --color-primary-600: #6A6AC6;
-  --color-primary-700: #5475D6;
-  --color-primary-800: #3F7FE6;
-  --color-primary-900: #2A8AF6;
+  --color-primary-50: #e92a67;
+  --color-primary-100: #d43577;
+  --color-primary-200: #bf3f87;
+  --color-primary-300: #a94a97;
+  --color-primary-400: #9455a7;
+  --color-primary-500: #7f5fb6;
+  --color-primary-600: #6a6ac6;
+  --color-primary-700: #5475d6;
+  --color-primary-800: #3f7fe6;
+  --color-primary-900: #2a8af6;
 }
 
 @source "../node_modules/flowbite-svelte/dist";
@@ -36,13 +36,11 @@ body {
   height: 100vh;
 }
 
-
 .svelte-flow {
   --bg-color: white;
   --text-color: black;
   --node-border-radius: 10px;
-  --node-box-shadow: 10px 0 15px rgba(42, 138, 246, 0.3),
-  -10px 0 15px rgba(233, 42, 103, 0.3);
+  --node-box-shadow: 10px 0 15px rgba(42, 138, 246, 0.3), -10px 0 15px rgba(233, 42, 103, 0.3);
   background-color: var(--bg-color) !important;
   color: var(--text-color);
 }
@@ -52,7 +50,7 @@ body {
   display: flex;
   height: 70px;
   min-width: 150px;
-  font-family: 'Fira Mono', Monospace;
+  font-family: "Fira Mono", Monospace;
   font-weight: 500;
   letter-spacing: -0.2px;
   box-shadow: var(--node-box-shadow);
@@ -68,17 +66,11 @@ body {
 }
 
 .gradient:before {
-  content: '';
+  content: "";
   position: absolute;
   padding-bottom: calc(100% * 1.41421356237);
   width: calc(100% * 1.41421356237);
-  background: conic-gradient(
-    from -160deg at 50% 50%,
-    #e92a67 0deg,
-    #a853ba 120deg,
-    #2a8af6 240deg,
-    #e92a67 360deg
-  );
+  background: conic-gradient(from -160deg at 50% 50%, #e92a67 0deg, #a853ba 120deg, #2a8af6 240deg, #e92a67 360deg);
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -86,14 +78,8 @@ body {
 }
 
 .svelte-flow__node-turbo.selected .wrapper.gradient:before {
-  content: '';
-  background: conic-gradient(
-    from -160deg at 50% 50%,
-    #e92a67 0deg,
-    #a853ba 120deg,
-    #2a8af6 240deg,
-    rgba(42, 138, 246, 0) 360deg
-  );
+  content: "";
+  background: conic-gradient(from -160deg at 50% 50%, #e92a67 0deg, #a853ba 120deg, #2a8af6 240deg, rgba(42, 138, 246, 0) 360deg);
   animation: spinner 4s linear infinite;
   transform: translate(-50%, -50%) rotate(0deg);
   z-index: -1;

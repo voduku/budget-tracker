@@ -1,4 +1,4 @@
-import {type InternalNode, Position} from '@xyflow/svelte';
+import {type InternalNode, Position} from "@xyflow/svelte";
 
 export function getDaysInMonth() {
   const now = new Date();
@@ -41,7 +41,7 @@ function getParams(nodeA: InternalNode, nodeB: InternalNode): [number, number, P
 
 function getHandleCoordsByPosition(node: InternalNode, handlePosition: Position): [number, number] {
   // all handles are from type source, that's why we use handleBounds.source here
-  const handle = node.internals.handleBounds?.source?.find(h => h.position === handlePosition);
+  const handle = node.internals.handleBounds?.source?.find((h) => h.position === handlePosition);
 
   if (!handle?.width || !handle?.height) {
     return [0, 0];
