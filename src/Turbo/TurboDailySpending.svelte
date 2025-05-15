@@ -11,29 +11,22 @@
         TableHead,
         TableHeadCell
     } from 'flowbite-svelte';
+    import {type DailySpending, getDailySpendingLocal, saveDailySpendingLocal} from "../local-storage";
+    import type {NodeProps} from "@xyflow/svelte";
+
+    interface ModalProps extends NodeProps {
+        open: boolean;
+        date: string
+    }
 
     // Props for the component
-    let {date, open = $bindable(false)} = $props();
+    let {date, open = $bindable(false)}: ModalProps = $props();
 
     // State for spending items
-    let spendingItems = $state([
-        {
-            id: 1,
-            timestamp: '09:30',
-            name: 'Breakfast',
-            category: 'Food',
-            amount: 12.50,
-            description: 'Coffee and bagel'
-        },
-        {
-            id: 2,
-            timestamp: '13:00',
-            category: 'Transportation',
-            name: 'Uber',
-            amount: 25.75,
-            description: 'Ride to meeting'
-        }
-    ]);
+    let dailySpendings = $derived.by<DailySpending[]>(() => {
+        console.log(`Getting date ${date}`)
+        return getDailySpendingLocal(date)
+    });
 
     // Form state for new item
     let newItem = $state({
@@ -59,7 +52,7 @@
     ];
 
     // Calculate total spending
-    let total = $derived(spendingItems.reduce((sum, item) => sum + Number(item.amount), 0));
+    let total = $derived(dailySpendings.reduce((sum, item) => sum + Number(item.amount), 0));
 
     // Add new spending item
     function addSpendingItem() {
@@ -69,7 +62,7 @@
         }
 
         // Generate unique ID
-        const id = Math.max(0, ...spendingItems.map(item => item.id)) + 1;
+        const id = Math.max(0, ...dailySpendings.map(item => item.id)) + 1;
 
         // Add timestamp if not provided
         const timestamp = newItem.timestamp || new Date().toLocaleTimeString('en-US', {
@@ -79,7 +72,7 @@
         });
 
         // Add new item to the list
-        spendingItems = [...spendingItems, {
+        dailySpendings = [...dailySpendings, {
             id,
             timestamp,
             name: newItem.name,
@@ -100,7 +93,11 @@
 
     // Remove spending item
     function removeSpendingItem(id: number) {
-        spendingItems = spendingItems.filter(item => item.id !== id);
+        dailySpendings = dailySpendings.filter(item => item.id !== id);
+    }
+
+    function save() {
+        saveDailySpendingLocal(date, dailySpendings)
     }
 
     // Format currency
@@ -118,14 +115,14 @@
         bind:open
         size="xl"
         autoclose={false}
-        outsideclose={false}
+        outsideclose={true}
         class="spending-modal"
 >
-    <div slot="header" class="flex items-center">
+    {#snippet header()}
         <h3 class="text-xl font-medium text-gray-900 dark:text-white">
             Daily Spending: {date}
         </h3>
-    </div>
+    {/snippet}
 
     <div class="space-y-6">
         <!-- Table of spending items -->
@@ -139,7 +136,7 @@
                 <TableHeadCell>Action</TableHeadCell>
             </TableHead>
             <TableBody>
-                {#each spendingItems as item (item.id)}
+                {#each dailySpendings as item (item.id)}
                     <TableBodyRow>
                         <TableBodyCell>{item.timestamp}</TableBodyCell>
                         <TableBodyCell>{item.name}</TableBodyCell>
@@ -147,7 +144,7 @@
                         <TableBodyCell>{formatCurrency(item.amount)}</TableBodyCell>
                         <TableBodyCell>{item.description}</TableBodyCell>
                         <TableBodyCell>
-                            <Button class="bg-primary-50" size="xs" on:click={() => removeSpendingItem(item.id)}>
+                            <Button class="bg-primary-50" size="xs" onclick={() => removeSpendingItem(item.id)}>
                                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
                                      xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                                      viewBox="0 0 24 24">
@@ -210,7 +207,7 @@
                         />
                     </TableBodyCell>
                     <TableBodyCell>
-                        <Button class="bg-primary-900" size="xs" on:click={addSpendingItem}>
+                        <Button class="bg-primary-900" size="xs" onclick={addSpendingItem}>
                             <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
                                  xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                                  viewBox="0 0 24 24">
@@ -225,15 +222,16 @@
         </Table>
     </div>
 
-    <div slot="footer" class="flex justify-between items-center">
-        <div class="text-lg font-bold">
-            Total: {formatCurrency(total)}
-        </div>
-        <div class="flex gap-2 right-0">
-            <Button class="bg-primary-50 text-black" on:click={() => open = false}>Close</Button>
-            <Button class="bg-primary-900 text-black">Save</Button>
-        </div>
-    </div>
+    {#snippet footer()}
+            <div class="text-lg font-bold">
+                Total: {formatCurrency(total)}
+            </div>
+            <div class="flex gap-2 right-0">
+                <Button class="bg-primary-50 text-black" onclick={() => open = false}>Close</Button>
+                <Button class="bg-primary-900 text-black" onclick={save}>Save</Button>
+            </div>
+
+    {/snippet}
 </Modal>
 
 <style>

@@ -1,7 +1,6 @@
 <script lang="ts">
     import {type EdgeProps, getBezierPath, useInternalNode} from "@xyflow/svelte";
     import {getEdgeParams} from "../utils";
-    import {BaseEdge} from "@xyflow/svelte";
 
     let {source, target, id}: EdgeProps = $props()
 
@@ -27,4 +26,10 @@
     })
 </script>
 
-<BaseEdge {id} {path} />
+<path
+        {id}
+        d={path}
+        class:svelte-flow__edge-path={true}
+        class:path-disabled={false}
+        fill="none"
+/>

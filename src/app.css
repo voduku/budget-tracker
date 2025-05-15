@@ -178,7 +178,13 @@ body {
 
 .svelte-flow__edge .svelte-flow__edge-path {
   stroke: url(#edge-gradient);
-  stroke-width: 2;
+  stroke-width: 4;
+  stroke-opacity: 0.75;
+}
+
+.path-disabled {
+  stroke: gray;
+  stroke-width: 4;
   stroke-opacity: 0.75;
 }
 

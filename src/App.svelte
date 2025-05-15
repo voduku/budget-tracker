@@ -70,10 +70,10 @@
     let nodeId: string = $state("")
     let date: string = $state("")
     const handleContextMenu: NodeEventWithPointer<MouseEvent | TouchEvent> = ({event, node}) => {
+        event.preventDefault();
         open = true
         nodeId = node.id
-        date = node.data.date
-        console.log(open)
+        date = node.data.date as string
     }
 </script>
 
@@ -82,7 +82,7 @@
                 onnodeclick={handleContextMenu}
                 connectionMode={ConnectionMode.Loose}>
         <Controls showLock={false}/>
-        <TurboDailySpending bind:open nodeId={nodeId} date={date}/>
+        <TurboDailySpending bind:open date={date}/>
         <svg>
             <defs>
                 <linearGradient id="edge-gradient">
