@@ -6,10 +6,14 @@
   import TurboEdge from "./components/TurboEdge.svelte";
   import {getDaysInMonth} from "./utils";
   import DailySpendingModal from "./components/DailySpendingModal.svelte";
+  import BudgetGoalModal from "./components/BudgetGoalModal.svelte";
+  import {getAllBudgetGoalLocal} from "./local-storage";
 
   const initialNodes: Node[] = [];
   const initialEdges: Edge[] = [];
   const dates = getDaysInMonth();
+  let budgetGoals = $state(getAllBudgetGoalLocal())
+
   for (let i = 0; i < dates.length - 1; i++) {
     const date = dates[i];
     initialNodes.push({
@@ -21,16 +25,11 @@
         description: "",
       },
     });
-    initialEdges.push({
-      type: "turbo",
-      id: `${i}-${i + 1}`,
-      source: `${i}`,
-      target: `${i + 1}`,
-      sourceHandle: i % 7 === 6 ? Position.Bottom : Position.Right,
-      targetHandle: i % 7 === 6 ? Position.Top : Position.Left,
-      animated: true,
-    });
+    Object.entries(budgetGoals).forEach(([name, goal]) => {
+      initialEdges.push();
+    })
   }
+
   const lastCalendarNode = dates.length - 1;
   initialNodes.push({
     type: "turbo",
@@ -46,7 +45,27 @@
   });
 
   let nodes = $state.raw(initialNodes);
-  let edges = $state.raw(initialEdges);
+  let edges = $derived.by(() => {
+    let edgs: Edge[] = [];
+    for (let i = 0; i < dates.length - 1; i++) {
+      Object.keys(budgetGoals).forEach((name) => {
+        edgs.push({
+          type: "turbo",
+          id: `${name}-${i}-${i + 1}`,
+          source: `${i}`,
+          target: `${i + 1}`,
+          sourceHandle: i % 7 === 6 ? Position.Bottom : Position.Right,
+          targetHandle: i % 7 === 6 ? Position.Top : Position.Left,
+          animated: true,
+          data: {
+            goals: budgetGoals,
+            goalName: ''
+          }
+        })
+      })
+    }
+    return edgs
+  });
 
   const nodeTypes = {
     turbo: TurboNode,
@@ -61,21 +80,29 @@
     markerEnd: "edge-circle",
   };
 
-  let open = $state(false);
+  let openDailySpendingModal = $state(false);
+  let openBudgetGoalModal = $state(false);
   let date: string = $state("");
   const handleContextMenu: NodeEventWithPointer<MouseEvent | TouchEvent> = ({event, node}) => {
     event.preventDefault();
-    open = true;
+    openDailySpendingModal = true;
     date = node.data.date as string;
   };
+  const handleBudgetGoalClick = () => {
+    openBudgetGoalModal = true
+  }
+
+  $inspect(budgetGoals)
+  $inspect(edges)
 </script>
 
 <div style:height="100vh">
   <SvelteFlow bind:edges bind:nodes connectionMode={ConnectionMode.Loose} {defaultEdgeOptions} {edgeTypes} fitView {nodeTypes} onnodeclick={handleContextMenu}>
-    <Controls showLock={false} buttonBgColorHover="green">
-      <ControlButton>💰</ControlButton>
+    <Controls buttonBgColorHover="green" showLock={false}>
+      <ControlButton onclick={handleBudgetGoalClick}>💰</ControlButton>
     </Controls>
-    <DailySpendingModal bind:open {date}/>
+    <DailySpendingModal bind:open={openDailySpendingModal} {date}/>
+    <BudgetGoalModal bind:goals={budgetGoals} bind:open={openBudgetGoalModal}/>
     <svg>
       <defs>
         <linearGradient id="edge-gradient">

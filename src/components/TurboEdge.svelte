@@ -1,14 +1,17 @@
 <script lang="ts">
-  import {type EdgeProps, getBezierPath, useInternalNode} from "@xyflow/svelte";
+  import {type EdgeProps, getBezierPath, useInternalNode, useNodesData} from "@xyflow/svelte";
   import {getEdgeParams} from "../utils";
   import type {BudgetGoal} from "../local-storage";
+  import type {TurboNodeProps} from "./TurboNode.svelte";
 
-  interface ProgressProps extends EdgeProps {
-    goals: Record<string, BudgetGoal>;
-    goalName: string;
+  export interface TurboEdgeProps extends EdgeProps {
+    data: {
+      goals: Record<string, BudgetGoal>,
+      goalName: string;
+    };
   }
 
-  let {source, target, id, goals = $bindable({}), goalName = $bindable()}: ProgressProps = $props();
+  let {source, target, id, data}: TurboEdgeProps = $props();
 
   let sourceNode = useInternalNode(source);
   let targetNode = useInternalNode(target);
@@ -32,8 +35,14 @@
   });
 
   let isMakingProgress = $derived.by(() => {
-    const goal = goals[goalName];
-    return !!goal && new Date(goal.completionDate) < new Date();
+    const [sourceData, targetData] = useNodesData([source, target]).current.map((d) => d.data as TurboNodeProps['data']);
+    // const goal = goals[goalName];
+    const goal = Object.values(data.goals)[0]
+    const currentDate = new Date();
+    return !!goal
+      && new Date(sourceData.date) >= new Date(goal.startDate)
+      && new Date(targetData.date) <= new Date(goal.completionDate)
+      && new Date(goal.completionDate) < currentDate;
   });
 </script>
 

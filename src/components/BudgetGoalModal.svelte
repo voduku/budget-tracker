@@ -1,16 +1,15 @@
 <script lang="ts">
   import {Button, Input, Modal, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell} from "flowbite-svelte";
-  import type {NodeProps} from "@xyflow/svelte";
-  import type {BudgetGoal} from "../local-storage";
+  import {type BudgetGoal, type BudgetGoalStore, saveAllBudgetGoalLocal} from "../local-storage";
 
-  interface ModalProps extends NodeProps {
+  interface ModalProps {
     open: boolean;
+    goals: BudgetGoalStore;
   }
 
   // Props for the component
-  let {open = $bindable(false)}: ModalProps = $props();
+  let {open = $bindable(false), goals = $bindable({})}: ModalProps = $props();
 
-  let goals = $state<BudgetGoal[]>([]);
   // Form state for new item
   let newGoal: BudgetGoal = $state({
     name: "",
@@ -20,24 +19,32 @@
     completionDate: new Date().toLocaleDateString()
   });
 
-  function addSpendingItem() {
+  function roundHalfEven(num) {
+    const decimal = num - Math.floor(num);
+    if (decimal === 0.5) {
+      return Math.floor(num) % 2 === 0 ? Math.floor(num) : Math.ceil(num);
+    }
+    return Math.round(num);
+  }
+
+  function addBudgetGoal() {
     // Validate required fields
     if (!newGoal.name || !newGoal.amount || !newGoal.startDate) {
       return;
     }
 
-
     // Add new item to the list
-    goals = [
+    console.log(new Date(newGoal.startDate).getTime(), roundHalfEven(newGoal.amount / 4000 * 30))
+    goals = {
       ...goals,
-      {
+      [newGoal.name]: {
         name: newGoal.name,
         description: newGoal.description,
         amount: newGoal.amount,
         startDate: newGoal.startDate,
-        completionDate: newGoal.completionDate
+        completionDate: new Date(new Date(newGoal.startDate).getTime() + roundHalfEven(newGoal.amount / 4000 * 30) * 86400000).toLocaleDateString()// fix income 4000/month
       },
-    ];
+    };
 
     // Reset form
     newGoal = {
@@ -50,8 +57,13 @@
   }
 
   // Remove spending item
-  function removePlan(name: string) {
-    goals = goals.filter((item) => item.name !== name);
+  function removePlan(goalName: string) {
+    goals = Object.entries(goals)
+      .filter(([name, _]) => name !== goalName)
+      .reduce((obj, [name, goal]) => {
+        obj[name] = goal;
+        return obj;
+      }, {} as BudgetGoalStore);
   }
 
   // Format currency
@@ -61,6 +73,11 @@
       currency: "USD",
       minimumFractionDigits: 2,
     }).format(amount);
+  }
+
+  function save() {
+    saveAllBudgetGoalLocal(goals);
+    open = false;
   }
 </script>
 
@@ -81,7 +98,7 @@
         <TableHeadCell>Start Date</TableHeadCell>
       </TableHead>
       <TableBody>
-        {#each goals as goal (goal.name)}
+        {#each Object.values(goals) as goal (goal.name)}
           <TableBodyRow>
             <TableBodyCell>{goal.name}</TableBodyCell>
             <TableBodyCell>{goal.description}</TableBodyCell>
@@ -112,7 +129,7 @@
         <!-- New item form row -->
         <TableBodyRow>
           <TableBodyCell>
-            <Input bind:value={newGoal.name} class="w-full" placeholder="Name" required type="time"/>
+            <Input bind:value={newGoal.name} class="w-full" placeholder="Name" required type="text"/>
           </TableBodyCell>
           <TableBodyCell>
             <Input bind:value={newGoal.description} class="w-full" placeholder="Description" type="text"/>
@@ -124,7 +141,7 @@
             <Input bind:value={newGoal.startDate} class="w-full" placeholder={newGoal.startDate} required type="text"/>
           </TableBodyCell>
           <TableBodyCell>
-            <Button class="bg-primary-900" onclick={addSpendingItem} size="xs">
+            <Button class="bg-primary-900" onclick={addBudgetGoal} size="xs">
               <svg
                 aria-hidden="true"
                 class="w-6 h-6 text-gray-800 dark:text-white"
@@ -146,6 +163,16 @@
       </TableBody>
     </Table>
   </div>
+
+  {#snippet footer()}
+    <div class="text-lg font-bold">
+      Total: {formatCurrency(0)}
+    </div>
+    <div class="flex gap-2 right-0">
+      <Button class="bg-primary-50 text-black" onclick={() => (open = false)}>Close</Button>
+      <Button class="bg-primary-900 text-black" onclick={save}>Save</Button>
+    </div>
+  {/snippet}
 </Modal>
 
 <style>

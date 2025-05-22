@@ -16,9 +16,9 @@ export interface BudgetGoal {
 }
 
 type DailySpendingStore = Record<string, DailySpending[]>;
+export type BudgetGoalStore = Record<string, BudgetGoal>;
 
 export function saveDailySpendingLocal(date: string, spending: DailySpending[]) {
-  console.log(`Saving ${date} - ${spending}`);
   const itemsStr = localStorage.getItem("dailySpending");
   const store = itemsStr ? (JSON.parse(itemsStr) as DailySpendingStore) : {};
   store[date] = spending;
@@ -35,6 +35,36 @@ export function getDailySpendingLocal(date: string): DailySpending[] {
   const itemsStr = localStorage.getItem("dailySpending");
   if (!itemsStr) return [];
   const store = JSON.parse(itemsStr) as DailySpendingStore;
-  console.log(store);
   return store[date] || [];
+}
+
+export function saveAllBudgetGoalLocal(store: BudgetGoalStore) {
+  localStorage.setItem("budgetGoal", JSON.stringify(store));
+}
+
+export function removeBudgetGoalLocal(name: string) {
+  const itemsStr = localStorage.getItem("budgetGoal");
+  const store = itemsStr ? (JSON.parse(itemsStr) as BudgetGoalStore) : {};
+  delete store[name];
+}
+
+export function getBudgetGoalLocal(name: string): BudgetGoal | undefined {
+  const itemsStr = localStorage.getItem("budgetGoal");
+  if (!itemsStr) return undefined;
+  const store = JSON.parse(itemsStr) as BudgetGoalStore;
+  return store[name];
+}
+
+export function getAllBudgetGoalLocal(): BudgetGoalStore {
+  const itemsStr = localStorage.getItem("budgetGoal");
+  if (!itemsStr) return {
+    default: {
+      name: "default",
+      description: "",
+      amount: 0,
+      startDate: "",
+      completionDate: ""
+    }
+  };
+  return JSON.parse(itemsStr) as BudgetGoalStore;
 }

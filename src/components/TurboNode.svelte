@@ -1,7 +1,7 @@
 <script lang="ts">
   import {Handle, type NodeProps, Position} from "@xyflow/svelte";
 
-  interface TurboNodeProps extends NodeProps {
+  export interface TurboNodeProps extends NodeProps {
     data: {
       date: string;
       description: string;
