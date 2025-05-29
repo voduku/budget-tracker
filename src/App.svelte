@@ -7,10 +7,9 @@
   import {getDaysInMonth} from "./utils";
   import DailySpendingModal from "./components/DailySpendingModal.svelte";
   import BudgetGoalModal from "./components/BudgetGoalModal.svelte";
-  import {getAllBudgetGoalLocal} from "./local-storage";
+  import {getAllBudgetGoalLocal, removeBudgetGoalLocal} from "./local-storage";
 
   const initialNodes: Node[] = [];
-  const initialEdges: Edge[] = [];
   const dates = getDaysInMonth();
   let budgetGoals = $state(getAllBudgetGoalLocal())
 
@@ -25,9 +24,6 @@
         description: "",
       },
     });
-    Object.entries(budgetGoals).forEach(([name, goal]) => {
-      initialEdges.push();
-    })
   }
 
   const lastCalendarNode = dates.length - 1;
@@ -91,6 +87,7 @@
   const handleBudgetGoalClick = () => {
     openBudgetGoalModal = true
   }
+  const clearGoals = () => removeBudgetGoalLocal('')
 
   $inspect(budgetGoals)
   $inspect(edges)
@@ -100,6 +97,7 @@
   <SvelteFlow bind:edges bind:nodes connectionMode={ConnectionMode.Loose} {defaultEdgeOptions} {edgeTypes} fitView {nodeTypes} onnodeclick={handleContextMenu}>
     <Controls buttonBgColorHover="green" showLock={false}>
       <ControlButton onclick={handleBudgetGoalClick}>💰</ControlButton>
+      <ControlButton onclick={clearGoals}>🗑️</ControlButton>
     </Controls>
     <DailySpendingModal bind:open={openDailySpendingModal} {date}/>
     <BudgetGoalModal bind:goals={budgetGoals} bind:open={openBudgetGoalModal}/>

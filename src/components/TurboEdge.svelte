@@ -42,7 +42,7 @@
     return !!goal
       && new Date(sourceData.date) >= new Date(goal.startDate)
       && new Date(targetData.date) <= new Date(goal.completionDate)
-      && new Date(goal.completionDate) < currentDate;
+      && new Date(targetData.date) < currentDate;
   });
 </script>
 

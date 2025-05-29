@@ -43,9 +43,10 @@ export function saveAllBudgetGoalLocal(store: BudgetGoalStore) {
 }
 
 export function removeBudgetGoalLocal(name: string) {
-  const itemsStr = localStorage.getItem("budgetGoal");
-  const store = itemsStr ? (JSON.parse(itemsStr) as BudgetGoalStore) : {};
-  delete store[name];
+  // const itemsStr = localStorage.getItem("budgetGoal");
+  // const store = itemsStr ? (JSON.parse(itemsStr) as BudgetGoalStore) : {};
+  // delete store[name];
+  localStorage.removeItem("budgetGoal");
 }
 
 export function getBudgetGoalLocal(name: string): BudgetGoal | undefined {
