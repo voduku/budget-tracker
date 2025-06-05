@@ -115,8 +115,12 @@
             <TableBodyCell>{goal.description}</TableBodyCell>
             <TableBodyCell>{formatCurrency(goal.amount)}</TableBodyCell>
             <TableBodyCell>{goal.startDate}</TableBodyCell>
-            <TableBodyCell>{goal.colorStart}</TableBodyCell>
-            <TableBodyCell>{goal.colorEnd}</TableBodyCell>
+            <TableBodyCell>
+              <Input bind:value={newGoal.colorStart} class="w-full" type="color" disabled/>
+            </TableBodyCell>
+            <TableBodyCell>
+              <Input bind:value={newGoal.colorEnd} class="w-full" type="color" disabled/>
+            </TableBodyCell>
             <TableBodyCell>
               <Radio bind:group={selected} bind:value={goal.name}></Radio>
             </TableBodyCell>
