@@ -52,7 +52,7 @@
           target: `${i + 1}`,
           sourceHandle: i % 7 === 6 ? Position.Bottom : Position.Right,
           targetHandle: i % 7 === 6 ? Position.Top : Position.Left,
-          animated: true,
+          animated: false,
           data: {
             goals: budgetGoals,
             goalName: ''
@@ -89,8 +89,9 @@
   }
   const clearGoals = () => removeBudgetGoalLocal('')
 
-  $inspect(budgetGoals)
-  $inspect(edges)
+  let gradientStart = $derived(Object.values(budgetGoals).find(goal => goal.isSelected)?.colorStart || "#ae53ba")
+  let gradientEnd = $derived(Object.values(budgetGoals).find(goal => goal.isSelected)?.colorEnd || "#2a8af6")
+
 </script>
 
 <div style:height="100vh">
@@ -104,8 +105,8 @@
     <svg>
       <defs>
         <linearGradient id="edge-gradient">
-          <stop offset="0%" stop-color="#ae53ba"/>
-          <stop offset="100%" stop-color="#2a8af6"/>
+          <stop offset="0%" stop-color={gradientStart}/>
+          <stop offset="100%" stop-color={gradientEnd}/>
         </linearGradient>
         <marker id="edge-circle" markerHeight="10" markerUnits="strokeWidth" markerWidth="10" orient="auto" refX="0" refY="0" viewBox="-5 -5 10 10">
           <circle cx="0" cy="0" r="2" stroke="#2a8af6" stroke-opacity="0.75"/>

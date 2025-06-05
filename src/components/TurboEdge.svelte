@@ -34,16 +34,22 @@
     return undefined;
   });
 
-  let isMakingProgress = $derived.by(() => {
+  let color = $derived.by(() => {
     const [sourceData, targetData] = useNodesData([source, target]).current.map((d) => d.data as TurboNodeProps['data']);
     // const goal = goals[goalName];
-    const goal = Object.values(data.goals)[0]
+    const goal = Object.values(data.goals).find(goal => goal.isSelected)
     const currentDate = new Date();
-    return !!goal
+
+    if (!!goal
       && new Date(sourceData.date) >= new Date(goal.startDate)
       && new Date(targetData.date) <= new Date(goal.completionDate)
-      && new Date(targetData.date) < currentDate;
+      && new Date(targetData.date) < currentDate
+    ) {
+      return "url(#edge-gradient)"
+    } else {
+      return "gray"
+    }
   });
 </script>
 
-<path class:path-disabled={!isMakingProgress} class:svelte-flow__edge-path={isMakingProgress} d={path} fill="none" {id}/>
+<path d={path} fill="none" {id} style:stroke={color} style:stroke-opacity="0.75" style:stroke-width="2"/>

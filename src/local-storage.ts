@@ -13,6 +13,9 @@ export interface BudgetGoal {
   amount: number;
   startDate: string;
   completionDate: string;
+  colorStart: string;
+  colorEnd: string;
+  isSelected: boolean;
 }
 
 type DailySpendingStore = Record<string, DailySpending[]>;
@@ -64,7 +67,10 @@ export function getAllBudgetGoalLocal(): BudgetGoalStore {
       description: "",
       amount: 0,
       startDate: "",
-      completionDate: ""
+      completionDate: "",
+      colorStart: "#000000",
+      colorEnd: "#000000",
+      isSelected: false
     }
   };
   return JSON.parse(itemsStr) as BudgetGoalStore;

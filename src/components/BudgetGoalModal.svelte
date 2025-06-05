@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {Button, Input, Modal, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell} from "flowbite-svelte";
+  import {Button, Input, Modal, Radio, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell} from "flowbite-svelte";
   import {type BudgetGoal, type BudgetGoalStore, saveAllBudgetGoalLocal} from "../local-storage";
 
   interface ModalProps {
@@ -16,10 +16,13 @@
     description: "",
     amount: 0.00,
     startDate: new Date().toLocaleDateString(),
-    completionDate: new Date().toLocaleDateString()
+    completionDate: new Date().toLocaleDateString(),
+    colorStart: "#000000",
+    colorEnd: "#000000",
+    isSelected: false
   });
 
-  function roundHalfEven(num) {
+  function roundHalfEven(num: number) {
     const decimal = num - Math.floor(num);
     if (decimal === 0.5) {
       return Math.floor(num) % 2 === 0 ? Math.floor(num) : Math.ceil(num);
@@ -38,10 +41,7 @@
     goals = {
       ...goals,
       [newGoal.name]: {
-        name: newGoal.name,
-        description: newGoal.description,
-        amount: newGoal.amount,
-        startDate: newGoal.startDate,
+        ...newGoal,
         completionDate: new Date(new Date(newGoal.startDate).getTime() + roundHalfEven(newGoal.amount / 4000 * 30) * 86400000).toLocaleDateString()// fix income 4000/month
       },
     };
@@ -52,7 +52,10 @@
       description: "",
       amount: 0.00,
       startDate: new Date().toLocaleDateString(),
-      completionDate: new Date().toLocaleDateString()
+      completionDate: new Date().toLocaleDateString(),
+      colorStart: "#000000",
+      colorEnd: "#000000",
+      isSelected: false
     };
   }
 
@@ -79,6 +82,11 @@
     saveAllBudgetGoalLocal(goals);
     open = false;
   }
+
+  let selected = $state(Object.values(goals).find(goal => goal.isSelected)?.name)
+  $effect(() => {
+    Object.values(goals).forEach(goal => goal.name === selected ? goal.isSelected = true : goal.isSelected = false)
+  })
 </script>
 
 <Modal autoclose={false} bind:open class="spending-modal" outsideclose={true} size="xl">
@@ -96,6 +104,9 @@
         <TableHeadCell>Description</TableHeadCell>
         <TableHeadCell>Goal</TableHeadCell>
         <TableHeadCell>Start Date</TableHeadCell>
+        <TableHeadCell>Gradient Start</TableHeadCell>
+        <TableHeadCell>Gradient End</TableHeadCell>
+        <TableHeadCell>Display</TableHeadCell>
       </TableHead>
       <TableBody>
         {#each Object.values(goals) as goal (goal.name)}
@@ -104,6 +115,11 @@
             <TableBodyCell>{goal.description}</TableBodyCell>
             <TableBodyCell>{formatCurrency(goal.amount)}</TableBodyCell>
             <TableBodyCell>{goal.startDate}</TableBodyCell>
+            <TableBodyCell>{goal.colorStart}</TableBodyCell>
+            <TableBodyCell>{goal.colorEnd}</TableBodyCell>
+            <TableBodyCell>
+              <Radio bind:group={selected} bind:value={goal.name}></Radio>
+            </TableBodyCell>
             <TableBodyCell>
               <Button class="bg-primary-50" size="xs" onclick={() => removePlan(goal.name)}>
                 <svg
@@ -139,6 +155,12 @@
           </TableBodyCell>
           <TableBodyCell>
             <Input bind:value={newGoal.startDate} class="w-full" placeholder={newGoal.startDate} required type="text"/>
+          </TableBodyCell>
+          <TableBodyCell>
+            <Input bind:value={newGoal.colorStart} class="w-full" placeholder={newGoal.colorStart} required type="color"/>
+          </TableBodyCell>
+          <TableBodyCell>
+            <Input bind:value={newGoal.colorEnd} class="w-full" placeholder={newGoal.colorEnd} required type="color"/>
           </TableBodyCell>
           <TableBodyCell>
             <Button class="bg-primary-900" onclick={addBudgetGoal} size="xs">

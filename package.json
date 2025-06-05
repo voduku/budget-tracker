@@ -32,9 +32,10 @@
     "tslib": "^2.6.0",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.32.1",
-    "vite": "^6.2.5"
+    "vite": "^6.2.5",
+    "flowbite-svelte-icons": "^2.1.1",
+    "svelte-awesome-color-picker": "^4.0.2"
   },
   "dependencies": {
-    "flowbite-svelte-icons": "^2.1.1"
   }
 }
