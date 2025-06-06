@@ -8,39 +8,51 @@
   import DailySpendingModal from "./components/DailySpendingModal.svelte";
   import BudgetGoalModal from "./components/BudgetGoalModal.svelte";
   import {getAllBudgetGoalLocal, removeBudgetGoalLocal} from "./local-storage";
+  import DisplayNode from "./components/DisplayNode.svelte";
 
-  const initialNodes: Node[] = [];
   const dates = getDaysInMonth();
   let budgetGoals = $state(getAllBudgetGoalLocal())
 
-  for (let i = 0; i < dates.length - 1; i++) {
-    const date = dates[i];
+  let nodes = $derived.by(() => {
+    const initialNodes: Node[] = [{
+      type: "display",
+      id: "display",
+      position: {x: 0, y: -250},
+      data: {
+        goals: budgetGoals
+      }
+    }];
+
+    for (let i = 0; i < dates.length - 1; i++) {
+      const date = dates[i];
+      initialNodes.push({
+        type: "turbo",
+        id: `${i}`,
+        position: {x: (i * 300) % (300 * 7), y: Math.trunc(i / 7) * 250},
+        data: {
+          date: date.toDateString(),
+          description: "",
+        },
+      });
+    }
+
+    const lastCalendarNode = dates.length - 1;
     initialNodes.push({
       type: "turbo",
-      id: `${i}`,
-      position: {x: (i * 300) % (300 * 7), y: Math.trunc(i / 7) * 250},
+      id: `${lastCalendarNode}`,
+      position: {
+        x: (lastCalendarNode * 300) % (300 * 7),
+        y: Math.trunc(lastCalendarNode / 7) * 250,
+      },
       data: {
-        date: date.toDateString(),
+        date: dates[lastCalendarNode].toDateString(),
         description: "",
       },
     });
-  }
 
-  const lastCalendarNode = dates.length - 1;
-  initialNodes.push({
-    type: "turbo",
-    id: `${lastCalendarNode}`,
-    position: {
-      x: (lastCalendarNode * 300) % (300 * 7),
-      y: Math.trunc(lastCalendarNode / 7) * 250,
-    },
-    data: {
-      date: dates[lastCalendarNode].toDateString(),
-      description: "",
-    },
+    return initialNodes;
   });
 
-  let nodes = $state.raw(initialNodes);
   let edges = $derived.by(() => {
     let edgs: Edge[] = [];
     for (let i = 0; i < dates.length - 1; i++) {
@@ -65,6 +77,7 @@
 
   const nodeTypes = {
     turbo: TurboNode,
+    display: DisplayNode
   };
 
   const edgeTypes = {
@@ -81,6 +94,8 @@
   let date: string = $state("");
   const handleContextMenu: NodeEventWithPointer<MouseEvent | TouchEvent> = ({event, node}) => {
     event.preventDefault();
+    if (node.id === 'display') return;
+
     openDailySpendingModal = true;
     date = node.data.date as string;
   };

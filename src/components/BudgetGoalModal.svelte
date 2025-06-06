@@ -1,6 +1,7 @@
 <script lang="ts">
   import {Button, Input, Modal, Radio, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell} from "flowbite-svelte";
   import {type BudgetGoal, type BudgetGoalStore, saveAllBudgetGoalLocal} from "../local-storage";
+  import {useSvelteFlow} from "@xyflow/svelte";
 
   interface ModalProps {
     open: boolean;
@@ -83,10 +84,6 @@
     open = false;
   }
 
-  let selected = $state(Object.values(goals).find(goal => goal.isSelected)?.name)
-  $effect(() => {
-    Object.values(goals).forEach(goal => goal.name === selected ? goal.isSelected = true : goal.isSelected = false)
-  })
 </script>
 
 <Modal autoclose={false} bind:open class="spending-modal" outsideclose={true} size="xl">
@@ -106,7 +103,7 @@
         <TableHeadCell>Start Date</TableHeadCell>
         <TableHeadCell>Gradient Start</TableHeadCell>
         <TableHeadCell>Gradient End</TableHeadCell>
-        <TableHeadCell>Display</TableHeadCell>
+<!--        <TableHeadCell>Display</TableHeadCell>-->
       </TableHead>
       <TableBody>
         {#each Object.values(goals) as goal (goal.name)}
@@ -121,9 +118,9 @@
             <TableBodyCell>
               <Input bind:value={newGoal.colorEnd} class="w-full" type="color" disabled/>
             </TableBodyCell>
-            <TableBodyCell>
-              <Radio bind:group={selected} bind:value={goal.name}></Radio>
-            </TableBodyCell>
+<!--            <TableBodyCell>-->
+<!--              <Radio bind:group={selected} bind:value={goal.name}></Radio>-->
+<!--            </TableBodyCell>-->
             <TableBodyCell>
               <Button class="bg-primary-50" size="xs" onclick={() => removePlan(goal.name)}>
                 <svg
